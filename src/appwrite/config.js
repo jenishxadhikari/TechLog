@@ -23,7 +23,7 @@ class Service {
           featuredImage,
           status,
           userId,
-        }
+        },
       );
     } catch (error) {
       console.log(error);
@@ -41,7 +41,7 @@ class Service {
           content,
           featuredImage,
           status,
-        }
+        },
       );
     } catch (error) {
       console.log(error);
@@ -53,7 +53,7 @@ class Service {
       return await this.databases.deleteDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug
+        slug,
       );
     } catch (error) {
       console.log(error);
@@ -65,8 +65,30 @@ class Service {
       return await this.databases.getDocument(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        slug
+        slug,
       );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getPostPreview(slug) {
+    try {
+      const document = await this.databases.getDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteCollectionId,
+        slug,
+        [Query.select("name", "content")],
+      );
+      if (document && document.content) {
+        const previewContent = document.content
+          .split(" ")
+          .slice(0, 10)
+          .join(" ");
+        document.content = previewContent;
+      }
+
+      return document;
     } catch (error) {
       console.log(error);
     }
@@ -77,7 +99,7 @@ class Service {
       return await this.databases.listDocuments(
         conf.appwriteDatabaseId,
         conf.appwriteCollectionId,
-        queries
+        queries,
       );
     } catch (error) {
       console.log(error);
@@ -85,6 +107,6 @@ class Service {
   }
 }
 
-const service = new Service();
+const appwriteService = new Service();
 
-export default service;
+export default appwriteService;
